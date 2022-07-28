@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import '../models/dojos.dart' as babDojos;
+import 'package:url_launcher/url_launcher.dart';
 
 const double cameraZoom = 6;
 const LatLng centreLocation = LatLng(54.6248969, -2.0353024);
@@ -18,6 +19,15 @@ class _MapPageState extends State<MapPage> {
 
   Location location = Location();
   babDojos.Dojos dojoLocations = babDojos.Dojos([]);
+
+  Future<void> _launchURLBrowser(String address) async {
+    Uri url = Uri.parse(address);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   void initState() {
@@ -55,9 +65,12 @@ class _MapPageState extends State<MapPage> {
           markerId: MarkerId(dojo.clubname),
           position: LatLng(dojo.lat, dojo.lng),
           infoWindow: InfoWindow(
-            title: dojo.clubname,
-            snippet: dojo.association,
-          ),
+              title: dojo.clubname,
+              snippet: dojo.association,
+              onTap: () {
+                _launchURLBrowser(
+                    'https://www.bab.org.uk/clubs/club-search/?ViewClubMapID=${dojo.id}#example');
+              }),
         );
         _markers[dojo.clubname] = marker;
       }
@@ -79,6 +92,14 @@ class _MapPageState extends State<MapPage> {
       themeMode: ThemeMode.system,
       home: Scaffold(
         appBar: AppBar(
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.keyboard_arrow_left_outlined, // add custom icons also
+            ),
+          ),
           title: const Text('Map'),
           centerTitle: true,
           elevation: 0,

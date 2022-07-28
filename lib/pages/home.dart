@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/dojos.dart' as babDojos;
 import 'package:pull_to_reveal/pull_to_reveal.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ListPage extends StatefulWidget {
   final String? title;
@@ -15,14 +16,26 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   late String _filter = "";
+  late int _noDojos = 0;
 
   // Open the map showing the whole of the UK
   babDojos.Dojos dojoLocations = babDojos.Dojos([]);
   late TextEditingController searchController;
 
-  Future<void> getDojos() async {
+  void getDojos() async {
     dojoLocations = await babDojos.getBABDojos();
-    setState(() {});
+    setState(() {
+      _noDojos = dojoLocations.dojos.length;
+    });
+  }
+
+  Future<void> _launchURLBrowser(String address) async {
+    Uri url = Uri.parse(address);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -34,8 +47,21 @@ class _ListPageState extends State<ListPage> {
   }
 
   void _onSearch() {
+    List<babDojos.Dojo> filter = [];
+
+    filter.addAll(dojoLocations.dojos);
     setState(() {
       _filter = searchController.text;
+      if (_filter != "") {
+        filter.retainWhere((element) {
+          return ('${element.clubname} ${element.association} ${element.clubtown}')
+              .toLowerCase()
+              .contains(_filter.toLowerCase());
+        });
+        _noDojos = filter.length;
+      } else {
+        _noDojos = dojoLocations.dojos.length;
+      }
     });
   }
 
@@ -47,10 +73,22 @@ class _ListPageState extends State<ListPage> {
         themeMode: ThemeMode.system,
         home: Scaffold(
           appBar: AppBar(
-            title: Text(widget.title!),
-            centerTitle: true,
-            elevation: 0,
-          ),
+              title: Text(widget.title!),
+              centerTitle: true,
+              elevation: 0,
+              actions: [
+                IconButton(
+                    icon: Icon(Icons.help_outline_sharp),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/about');
+                    }),
+                IconButton(
+                    icon: Icon(Icons.explore_outlined),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/map',
+                          arguments: dojoLocations);
+                    }),
+              ]),
           body: Center(
             child: PullToRevealTopItemList.builder(
               revealWhenEmpty: widget.revealWhenEmpty,
@@ -66,9 +104,14 @@ class _ListPageState extends State<ListPage> {
                     return Container();
                   }
                   return Card(
-                      margin: EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
                       child: ListTile(
-                          onTap: () {},
+                          onTap: () {
+                            //Open the BAB dojo details
+                            //"https://www.bab.org.uk/clubs/club-search/?ViewClubMapID=\(clubID)#example"
+                            _launchURLBrowser(
+                                'https://www.bab.org.uk/clubs/club-search/?ViewClubMapID=${dojoLocations.dojos[index].id}#example');
+                          },
                           title: Text(
                               dojoLocations.dojos[index].clubname.trim(),
                               key: Key('$index'),
@@ -87,8 +130,9 @@ class _ListPageState extends State<ListPage> {
                             )),
                           ),
                           isThreeLine: true,
-                          trailing: Icon(Icons.keyboard_arrow_right_outlined,
-                              size: 60)));
+                          trailing: const Icon(
+                              Icons.keyboard_arrow_right_outlined,
+                              size: 50)));
                 },
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
@@ -97,9 +141,9 @@ class _ListPageState extends State<ListPage> {
               dividerBuilder: (BuildContext context) {
                 return Container(
                   alignment: Alignment.topLeft,
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Text(
-                    'Clubs: ' + dojoLocations.dojos.length.toString(),
+                    'Clubs: $_noDojos',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 );
