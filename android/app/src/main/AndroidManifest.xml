@@ -29,7 +29,7 @@
   </queries>
 
    <application
-        android:label="bab_club_finder"
+        android:label="BAB Club Finder"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
