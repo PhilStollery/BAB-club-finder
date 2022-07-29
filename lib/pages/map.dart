@@ -80,8 +80,8 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     // Pass the dojos into this widget - will be
-    dojoLocations =
-        ModalRoute.of(context)?.settings.arguments as babDojos.Dojos;
+    final dojoLocations =
+        ModalRoute.of(context)!.settings.arguments as babDojos.Dojos;
 
     CameraPosition initialLocation =
         const CameraPosition(zoom: cameraZoom, target: centreLocation);

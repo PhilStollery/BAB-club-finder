@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../models/dojos.dart' as babDojos;
 import 'package:pull_to_reveal/pull_to_reveal.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bab_club_finder/pages/about.dart';
+import 'package:bab_club_finder/pages/map.dart';
 
 class ListPage extends StatefulWidget {
   final String? title;
@@ -80,13 +83,23 @@ class _ListPageState extends State<ListPage> {
                 IconButton(
                     icon: Icon(Icons.help_outline_sharp),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/about');
+                      //Navigator.pushNamed(context, '/about');
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => const AboutPage()),
+                      );
                     }),
                 IconButton(
                     icon: Icon(Icons.explore_outlined),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/map',
-                          arguments: dojoLocations);
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => const MapPage(),
+                          settings: RouteSettings(arguments: dojoLocations),
+                        ),
+                      );
                     }),
               ]),
           body: Center(
