@@ -1,16 +1,17 @@
-# bab_club_finder
+# BAB Club Finder
 
-A new Flutter project.
+:::image type="content" source="feature-graphic.png" alt-text="Banner images":::
 
-## Getting Started
+A dojo finding app written in Flutter. Please let me know if I've done anything wrong, and raise PR's with fixes.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+:::row:::
+    :::column:::
+        <br/><br/>
+        Built for the love of Aikido.
+    :::column-end:::
+    :::column:::
+        :::image type="content" source="playstore.png" alt-text="App Icon" border="false":::
+    :::column-end:::
+    :::column:::  
+    :::column-end:::
+:::row-end:::
